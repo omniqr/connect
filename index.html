@@ -7,111 +7,83 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { transition: background-color 0.3s, color 0.3s; font-family: 'Inter', sans-serif; }
-        .glass { backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; }
-        .light-mode { background-color: #f8f9fa; color: #1a1a1a; }
-        .light-mode .glass { background: rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.05); }
-        .dark-mode { background-color: #050505; color: white; }
-        .dark-mode .glass { background: rgba(255,255,255,0.05); }
-        .btn-action { transition: all 0.2s ease; }
-        .btn-action:active { scale: 0.95; }
+        body { background-color: #F3F4F6; color: #1F2937; font-family: 'Inter', sans-serif; }
+        .premium-card { background: white; border-radius: 32px; box-shadow: 0 10px 40px rgba(0,0,0,0.05); }
+        .social-btn { transition: transform 0.2s; }
+        .social-btn:active { transform: scale(0.95); }
     </style>
 </head>
-<body class="p-4 flex flex-col items-center min-h-screen">
+<body class="flex flex-col items-center justify-center min-h-screen p-6">
 
-    <div id="main-content" class="w-full max-w-md opacity-0 transition-opacity duration-500">
-        <header class="text-center mt-12 mb-10">
-            <h1 id="biz-name" class="text-4xl font-black tracking-tight mb-2">Business</h1>
-            <p id="welcome-text" class="text-gray-500 font-medium"></p>
-        </header>
+    <div id="content" class="w-full max-w-sm text-center">
+        <div class="mb-8">
+            <h1 id="biz-name" class="text-3xl font-black tracking-tight text-gray-900">Business Name</h1>
+            <p id="welcome" class="text-gray-400 mt-2 font-medium italic"></p>
+        </div>
 
-        <div id="wifi-section" class="hidden glass p-6 mb-6">
-            <div class="flex items-center mb-4">
-                <div class="bg-blue-500/10 p-3 rounded-2xl mr-4 text-blue-500">
-                    <i class="fas fa-wifi text-xl"></i>
-                </div>
-                <div>
-                    <h3 id="wifi-label" class="text-xs uppercase font-bold tracking-widest text-gray-400"></h3>
-                    <p id="wifi-ssid" class="text-lg font-black"></p>
-                </div>
+        <div id="wifi-box" class="hidden premium-card p-6 mb-6 border border-white">
+            <div class="bg-blue-50 w-16 h-16 rounded-3xl flex items-center justify-center mx-auto mb-4 text-blue-500">
+                <i class="fas fa-wifi text-2xl"></i>
             </div>
-            <button onclick="copyWifi()" id="copy-btn" class="w-full py-4 rounded-2xl bg-white text-black font-black uppercase text-sm tracking-widest btn-action shadow-xl"></button>
-            <p id="status" class="text-center text-xs mt-3 text-green-500 opacity-0"></p>
+            <h3 id="wifi-label" class="text-[10px] uppercase font-bold tracking-[0.2em] text-gray-400 mb-1"></h3>
+            <p id="wifi-ssid" class="text-xl font-black text-gray-800 mb-4"></p>
+            <button onclick="copyWifi()" id="copy-btn" class="w-full py-4 bg-gray-900 text-white rounded-2xl font-bold text-sm uppercase tracking-widest shadow-lg shadow-gray-200"></button>
+            <p id="status" class="text-green-500 text-[10px] font-bold mt-2 opacity-0 transition-opacity">COPIED</p>
         </div>
 
         <div id="links" class="space-y-4"></div>
 
-        <footer class="mt-20 text-center pb-10">
-            <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest opacity-50">Powered by</p>
-            <h2 class="text-lg font-black tracking-tighter opacity-70">OmniQR</h2>
-        </footer>
+        <div class="mt-12 opacity-30">
+            <p class="text-[10px] font-bold tracking-widest uppercase">Powered by OmniQR</p>
+        </div>
     </div>
 
     <script>
         const i18n = {
-            tr: { welcome: "Dijital Dünyamıza Hoş Geldiniz", wifi: "Misafir Wi-Fi", copy: "Şifreyi Kopyala", copied: "Şifre Kopyalandı!", visit: "Ziyaret Et" },
-            en: { welcome: "Welcome to our digital space", wifi: "Guest Wi-Fi", copy: "Copy Password", copied: "Password Copied!", visit: "Visit" },
-            de: { welcome: "Willkommen in unserem digitalen Raum", wifi: "Gast Wi-Fi", copy: "Passwort kopieren", copied: "Passwort kopiert!", visit: "Besuchen" }
+            tr: { welcome: "Dijital Dünyamıza Hoş Geldiniz", wifi: "Misafir İnterneti", copy: "Şifreyi Kopyala", copied: "Şifre Kopyalandı", visit: "Ziyaret Et" },
+            en: { welcome: "Welcome to our digital space", wifi: "Guest Wi-Fi", copy: "Copy Password", copied: "Password Copied", visit: "Visit Us" },
+            de: { welcome: "Willkommen bei uns", wifi: "Gast Wi-Fi", copy: "Passwort Kopieren", copied: "Kopiert!", visit: "Besuchen" }
         };
 
-        function getIcon(val) {
-            if (val.includes('instagram')) return 'fab fa-instagram';
-            if (val.includes('twitter') || val.includes('x.com')) return 'fab fa-x-twitter';
-            if (val.includes('tiktok')) return 'fab fa-tiktok';
-            if (val.includes('facebook')) return 'fab fa-facebook';
-            if (val.includes('youtube')) return 'fab fa-youtube';
-            return 'fas fa-globe'; // Web sitesi için dünya ikonu
+        function getIcon(v) {
+            v = v.toLowerCase();
+            if(v.includes('instagram')) return 'fab fa-instagram';
+            if(v.includes('twitter') || v.includes('x.com')) return 'fab fa-x-twitter';
+            if(v.includes('tiktok')) return 'fab fa-tiktok';
+            if(v.includes('facebook')) return 'fab fa-facebook';
+            return 'fas fa-link';
         }
 
-        const urlParams = new URLSearchParams(window.location.search);
-        const rawData = urlParams.get('d');
-        
-        if (rawData) {
-            const data = JSON.parse(atob(rawData));
-            const lang = data.l || 'en';
-            const dict = i18n[lang];
+        const data = JSON.parse(atob(new URLSearchParams(window.location.search).get('d')));
+        const dict = i18n[data.l || 'en'];
 
-            // Tema Ayarı
-            document.body.className = data.t === 'l' ? 'light-mode' : 'dark-mode';
+        document.getElementById('biz-name').innerText = data.n;
+        document.getElementById('welcome').innerText = dict.welcome;
 
-            // İçerik Doldurma
-            document.getElementById('biz-name').innerText = data.n;
-            document.getElementById('welcome-text').innerText = dict.welcome;
-
-            if (data.wn && data.wp) {
-                document.getElementById('wifi-section').classList.remove('hidden');
-                document.getElementById('wifi-label').innerText = dict.wifi;
-                document.getElementById('wifi-ssid').innerText = data.wn;
-                document.getElementById('copy-btn').innerText = dict.copy;
-                window.wifiPass = data.wp;
-            }
-
-            const linksCont = document.getElementById('links');
-            if (data.soc) {
-                data.soc.forEach(s => {
-                    const icon = getIcon(s.v.toLowerCase());
-                    const link = s.v.startsWith('http') ? s.v : `https://${s.v.replace('@','')}`;
-                    linksCont.innerHTML += `
-                        <a href="${link}" target="_blank" class="glass p-5 flex items-center justify-between btn-action">
-                            <div class="flex items-center">
-                                <div class="w-12 h-12 flex items-center justify-center bg-gray-500/10 rounded-2xl mr-4 text-2xl">
-                                    <i class="${icon}"></i>
-                                </div>
-                                <span class="font-bold text-lg">${s.v.includes('@') ? s.v : dict.visit}</span>
-                            </div>
-                            <i class="fas fa-chevron-right opacity-30"></i>
-                        </a>`;
-                });
-            }
-            document.getElementById('main-content').classList.replace('opacity-0', 'opacity-100');
+        if(data.wn) {
+            document.getElementById('wifi-box').classList.remove('hidden');
+            document.getElementById('wifi-label').innerText = dict.wifi;
+            document.getElementById('wifi-ssid').innerText = data.wn;
+            document.getElementById('copy-btn').innerText = dict.copy;
+            window.wp = data.wp;
         }
+
+        data.soc?.forEach(s => {
+            const link = s.v.startsWith('http') ? s.v : `https://${s.v}`;
+            document.getElementById('links').innerHTML += `
+                <a href="${link}" target="_blank" class="premium-card p-5 flex items-center bg-white social-btn border border-gray-100">
+                    <div class="w-10 h-10 bg-gray-50 rounded-xl flex items-center justify-center mr-4 text-gray-800">
+                        <i class="${getIcon(s.v)} text-xl"></i>
+                    </div>
+                    <span class="font-bold text-gray-700 flex-1 text-left">${dict.visit}</span>
+                    <i class="fas fa-arrow-right text-gray-300 text-xs"></i>
+                </a>`;
+        });
 
         function copyWifi() {
-            navigator.clipboard.writeText(window.wifiPass);
-            const s = document.getElementById('status');
-            s.innerText = i18n[getParams().l || 'en'].copied;
-            s.style.opacity = 1;
-            setTimeout(() => s.style.opacity = 0, 2000);
+            navigator.clipboard.writeText(window.wp);
+            document.getElementById('status').classList.replace('opacity-0', 'opacity-100');
+            setTimeout(() => document.getElementById('status').classList.replace('opacity-100', 'opacity-0'), 2000);
         }
     </script>
 </body>
