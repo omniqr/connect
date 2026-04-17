@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OmniQR Connect</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { background-color: #050505; color: white; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 24px; }
+        .btn-gradient { background: linear-gradient(135deg, #ffffff 0%, #e0e0e0 100%); color: black; }
+        .wifi-card { background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%); border: 1px solid #333; }
+    </style>
+</head>
+<body class="p-4 flex flex-col items-center min-h-screen">
+
+    <div id="loading" class="mt-20 text-gray-500 animate-pulse">Connecting...</div>
+
+    <div id="main-content" class="hidden w-full max-w-md">
+        <header class="text-center mt-8 mb-10">
+            <h1 id="biz-name" class="text-4xl font-black tracking-tight">Business Name</h1>
+            <p class="text-gray-500 mt-2 font-medium">Welcome to our digital space</p>
+        </header>
+
+        <div id="wifi-section" class="hidden glass p-6 mb-6 wifi-card">
+            <div class="flex items-center mb-4">
+                <div class="bg-white/10 p-3 rounded-xl mr-4">
+                    <i class="fas fa-wifi text-xl"></i>
+                </div>
+                <div>
+                    <h3 class="text-sm text-gray-400 uppercase font-bold tracking-widest">Guest Wi-Fi</h3>
+                    <p id="wifi-ssid" class="text-lg font-bold">Network Name</p>
+                </div>
+            </div>
+            <button onclick="copyWifi()" class="w-full py-4 rounded-xl btn-gradient font-black text-sm uppercase tracking-wider active:scale-95 transition-transform">
+                Copy Password
+            </button>
+            <p id="copy-status" class="text-center text-xs mt-3 text-green-500 opacity-0 transition-opacity">Password copied!</p>
+        </div>
+
+        <div id="links-container" class="space-y-4">
+            </div>
+
+        <footer class="mt-20 text-center pb-10">
+            <p class="text-xs text-gray-600 font-medium">This experience is powered by</p>
+            <h2 class="text-sm font-bold text-gray-400 tracking-tighter mt-1">OmniQR Professional</h2>
+        </footer>
+    </div>
+
+    <script>
+        // --- URL'den Veri Çözme (Base64 Decode) ---
+        function getParams() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const data = urlParams.get('d');
+            if (!data) return null;
+            try {
+                return JSON.parse(atob(data));
+            } catch (e) {
+                return null;
+            }
+        }
+
+        const info = getParams();
+        let globalWifiPass = "";
+
+        if (info) {
+            document.getElementById('loading').classList.add('hidden');
+            document.getElementById('main-content').classList.remove('hidden');
+
+            // İşletme adını yaz
+            document.getElementById('biz-name').innerText = info.n;
+
+            // Wi-Fi varsa göster
+            if (info.wn && info.wp) {
+                document.getElementById('wifi-section').classList.remove('hidden');
+                document.getElementById('wifi-ssid').innerText = info.wn;
+                globalWifiPass = info.wp;
+            }
+
+            // Sosyal medyaları listele
+            const container = document.getElementById('links-container');
+            if (info.soc && info.soc.length > 0) {
+                info.soc.forEach(link => {
+                    const btn = document.createElement('a');
+                    btn.href = link.v.startsWith('http') ? link.v : `https://instagram.com/${link.v.replace('@', '')}`;
+                    btn.target = "_blank";
+                    btn.className = "glass p-5 flex items-center justify-between hover:bg-white/10 transition-colors w-full";
+                    btn.innerHTML = `
+                        <div class="flex items-center">
+                            <i class="fab fa-instagram text-2xl mr-4"></i>
+                            <span class="font-bold text-lg">Follow us</span>
+                        </div>
+                        <i class="fas fa-external-link-alt text-gray-600"></i>
+                    `;
+                    container.appendChild(btn);
+                });
+            }
+        }
+
+        function copyWifi() {
+            navigator.clipboard.writeText(globalWifiPass);
+            const status = document.getElementById('copy-status');
+            status.style.opacity = "1";
+            setTimeout(() => { status.style.opacity = "0"; }, 2000);
+        }
+    </script>
+</body>
+</html>
