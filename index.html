@@ -134,8 +134,19 @@
                 const list = document.getElementById('socialList');
                 data.soc.forEach(s => {
                     const conf = SOCIAL_CONFIG[s.t] || { icon: 'fas fa-link', color: '#fff' };
+                    let finalUrl = s.v;
+                    
+                    // Smart Link Formatting
+                    if (!finalUrl.startsWith('http')) {
+                        if (s.t === 'Instagram') finalUrl = `https://instagram.com/${finalUrl}`;
+                        else if (s.t === 'Twitter') finalUrl = `https://x.com/${finalUrl}`;
+                        else if (s.t === 'TikTok') finalUrl = `https://tiktok.com/@${finalUrl}`;
+                        else if (s.t === 'Facebook') finalUrl = `https://facebook.com/${finalUrl}`;
+                        else if (s.t === 'Web') finalUrl = `https://${finalUrl}`;
+                    }
+
                     const card = document.createElement('a');
-                    card.href = s.v.startsWith('http') ? s.v : `https://${s.v}`;
+                    card.href = finalUrl;
                     card.target = "_blank";
                     card.className = "flex items-center p-4 social-card";
                     card.innerHTML = `
