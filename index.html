@@ -14,8 +14,12 @@
             margin: 0;
             display: flex;
             justify-content: center;
-            align-items: center;
             min-height: 100vh;
+        }
+        .main-container {
+            width: 100%;
+            max-width: 450px;
+            padding: 24px;
         }
         .glass {
             background: rgba(255, 255, 255, 0.05);
@@ -23,6 +27,7 @@
             -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 32px;
+            margin-bottom: 24px;
         }
         .btn-blue {
             background: linear-gradient(135deg, #0A84FF, #0055FF);
@@ -35,46 +40,65 @@
             background: rgba(255, 255, 255, 0.03);
             border-radius: 20px;
             transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            padding: 16px;
+            margin-bottom: 12px;
+            text-decoration: none;
+            color: white;
         }
+        .social-card:hover { background: rgba(255, 255, 255, 0.08); }
+        .logo-box {
+            width: 100px;
+            height: 100px;
+            border-radius: 28px;
+            margin: 0 auto 16px;
+            overflow: hidden;
+            background: rgba(255,255,255,0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .logo-img { width: 100%; height: 100%; object-cover: cover; }
     </style>
 </head>
 <body>
-    <div id="content" class="w-full max-w-md p-6 hidden">
+    <div id="loader" class="flex items-center justify-center h-screen text-blue-500">
+        <i class="fas fa-circle-notch fa-spin fa-2x"></i>
+    </div>
+
+    <div id="content" class="main-container hidden">
         
-        <!-- Header Section -->
-        <div class="glass p-8 text-center mb-6">
-            <div id="logoContainer" class="w-24 h-24 bg-blue-500/10 rounded-3xl flex items-center justify-center mx-auto mb-4 overflow-hidden hidden">
-                <img id="logoImg" src="" class="w-full h-full object-cover">
+        <!-- Header -->
+        <div class="glass p-8 text-center">
+            <div id="logoWrapper" class="logo-box hidden">
+                <img id="logoImg" src="" class="logo-img">
             </div>
-            <div id="defaultIcon" class="w-20 h-20 bg-blue-500/10 rounded-3xl flex items-center justify-center mx-auto mb-4">
-                <i id="headerIcon" class="fas fa-qrcode text-4xl text-blue-500"></i>
-            </div>
-            <h1 id="mainTitle" class="text-3xl font-black mb-2">OmniQR</h1>
-            <p id="subTitle" class="text-gray-500 font-medium">Smart Connect Card</p>
+            <h1 id="mainTitle" class="text-3xl font-black mb-1">OmniQR</h1>
+            <p id="subTitle" class="text-gray-500 font-medium">Business Hub</p>
         </div>
 
-        <!-- CONTACT MODE UI -->
-        <div id="contactSection" class="glass p-8 mb-6 hidden text-center">
-            <div class="flex flex-col items-center space-y-6">
-                <div class="w-full space-y-1">
-                   <p id="contactPhone" class="text-xl font-bold text-blue-500"></p>
-                   <p id="contactEmail" class="text-gray-400"></p>
-                </div>
-                <button onclick="downloadVCard()" class="w-full h-16 btn-blue rounded-2xl font-black text-lg shadow-xl shadow-blue-500/20 flex items-center justify-center">
-                    <i class="fas fa-user-plus mr-3"></i> <span id="saveBtnText">SAVE TO CONTACTS</span>
-                </button>
+        <!-- Contact Section -->
+        <div id="contactSection" class="glass p-8 hidden">
+            <h2 class="text-xs font-black text-gray-500 tracking-widest uppercase mb-4">Contact</h2>
+            <div class="text-center mb-6">
+                 <p id="contactPhone" class="text-2xl font-black text-blue-500 mb-1"></p>
+                 <p id="contactEmail" class="text-gray-400 font-medium"></p>
             </div>
+            <button onclick="downloadVCard()" class="w-full h-16 btn-blue rounded-2xl font-black text-lg shadow-xl shadow-blue-500/20 flex items-center justify-center">
+                <i class="fas fa-user-plus mr-3"></i> <span id="saveLabel">SAVE TO CONTACTS</span>
+            </button>
         </div>
 
-        <!-- HUB MODE UI -->
-        <div id="wifiSection" class="glass p-6 mb-6 hidden">
-            <h2 class="text-xs font-black text-gray-500 tracking-widest uppercase mb-4" id="wifiTitle">Wi-Fi Access</h2>
+        <!-- WiFi Section -->
+        <div id="wifiSection" class="glass p-6 hidden">
+            <h2 class="text-xs font-black text-gray-500 tracking-widest uppercase mb-4">Wi-Fi</h2>
             <div class="flex items-center justify-between bg-white/5 p-4 rounded-2xl">
                 <div class="flex items-center">
                     <i class="fas fa-wifi text-blue-500 mr-4"></i>
                     <div>
-                        <p id="ssid" class="font-bold">SSID</p>
-                        <p class="text-xs text-gray-400" id="wifiSub">Tap to copy password</p>
+                        <p id="ssid" class="font-bold">Network Name</p>
+                        <p class="text-[10px] text-gray-500 uppercase tracking-wider" id="wifiHint">Tap to copy password</p>
                     </div>
                 </div>
                 <button onclick="copyWifi()" class="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center">
@@ -83,83 +107,85 @@
             </div>
         </div>
 
+        <!-- Social List -->
         <div id="socialsSection" class="glass p-6 hidden">
-            <h2 class="text-xs font-black text-gray-500 tracking-widest uppercase mb-4" id="socialsTitle">Channels</h2>
-            <div id="socialList" class="space-y-3"></div>
+            <h2 class="text-xs font-black text-gray-500 tracking-widest uppercase mb-4">Links & Social</h2>
+            <div id="socialList"></div>
         </div>
 
-        <footer class="mt-8 text-center">
-            <p class="text-gray-600 text-xs">Generated by OmniQR Business Professional</p>
+        <footer class="text-center py-6">
+            <p class="text-gray-600 text-[10px] font-black tracking-widest uppercase">OmniQR Business Professional Edition</p>
         </footer>
-    </div>
-
-    <div id="loader" class="text-blue-500">
-        <i class="fas fa-circle-notch fa-spin fa-2x"></i>
     </div>
 
     <script>
         const TRANSLATIONS = {
-            tr: { wifi: 'Wi-Fi Erişimi', socials: 'Kanallar', wifiSub: 'Şifreyi kopyalamak için dokun', copied: 'Şifre kopyalandı!', saveBtn: 'REHBERE KAYDET', contactSub: 'Dijital Kartvizit' },
-            en: { wifi: 'Wi-Fi Access', socials: 'Channels', wifiSub: 'Tap to copy password', copied: 'Password copied!', saveBtn: 'SAVE TO CONTACTS', contactSub: 'Digital Business Card' }
+            tr: { save: 'REHBERE KAYDET', hint: 'Şifreyi kopyalamak için dokun', copied: 'Şifre kopyalandı!' },
+            en: { save: 'SAVE TO CONTACTS', hint: 'Tap to copy password', copied: 'Password copied!' }
         };
 
-        const SOCIAL_CONFIG = {
-            'Instagram': { icon: 'fa-brands fa-instagram', color: '#E4405F' },
-            'Twitter': { icon: 'fa-brands fa-twitter', color: '#1DA1F2' },
-            'TikTok': { icon: 'fa-brands fa-tiktok', color: '#fff' },
-            'Facebook': { icon: 'fa-brands fa-facebook', color: '#1877F2' },
-            'Web': { icon: 'fas fa-globe', color: '#0A84FF' }
+        const SOCIAL_ICONS = {
+            'Instagram': 'fa-brands fa-instagram',
+            'Twitter': 'fa-brands fa-twitter',
+            'TikTok': 'fa-brands fa-tiktok',
+            'Facebook': 'fa-brands fa-facebook',
+            'Web': 'fas fa-globe'
         };
 
         let wifiPass = "";
-        let globalData = null;
+        let rawData = null;
 
-        function decodeData() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const d = urlParams.get('d');
+        function init() {
+            const params = new URLSearchParams(window.location.search);
+            const d = params.get('d');
             if (!d) return;
             try {
-                globalData = JSON.parse(decodeURIComponent(escape(atob(d))));
-                render(globalData);
-            } catch (e) { console.error("Decode fail", e); }
+                rawData = JSON.parse(decodeURIComponent(escape(atob(d))));
+                render(rawData);
+            } catch (e) { console.error(e); }
         }
 
         function render(data) {
             const lang = data.l || 'en';
             const t = TRANSLATIONS[lang] || TRANSLATIONS['en'];
-            window.currentLang = lang;
+            window.langCode = lang;
 
-            document.getElementById('saveBtnText').innerText = t.saveBtn;
-            document.getElementById('wifiTitle').innerText = t.wifi;
-            document.getElementById('socialsTitle').innerText = t.socials;
+            // Header info
+            document.getElementById('mainTitle').innerText = data.n;
+            if (data.logo) {
+                document.getElementById('logoWrapper').classList.remove('hidden');
+                document.getElementById('logoImg').src = data.logo;
+            }
 
-            if (data.m === 'contact') {
-                document.getElementById('headerIcon').className = "fas fa-user-tie text-4xl text-blue-500";
-                document.getElementById('mainTitle').innerText = `${data.fn} ${data.ln}`;
-                document.getElementById('subTitle').innerText = data.comp || t.contactSub;
+            // Contact
+            if (data.fn || data.ph) {
                 document.getElementById('contactSection').classList.remove('hidden');
-                document.getElementById('contactPhone').innerText = data.ph;
-                document.getElementById('contactEmail').innerText = data.em;
-            } else {
-                document.getElementById('mainTitle').innerText = data.n;
-                if (data.wn) {
-                    document.getElementById('wifiSection').classList.remove('hidden');
-                    document.getElementById('ssid').innerText = data.wn;
-                    wifiPass = data.wp;
-                }
-                if (data.soc && data.soc.length > 0) {
-                    document.getElementById('socialsSection').classList.remove('hidden');
-                    const list = document.getElementById('socialList');
-                    data.soc.forEach(s => {
-                        let finalUrl = s.v.startsWith('http') ? s.v : `https://${s.v}`;
-                        const conf = SOCIAL_CONFIG[s.t] || { icon: 'fas fa-link', color: '#fff' };
-                        const card = document.createElement('a');
-                        card.href = finalUrl; card.target = "_blank";
-                        card.className = "flex items-center p-4 social-card";
-                        card.innerHTML = `<i class="${conf.icon} text-xl mr-4" style="color: ${conf.color}"></i><span class="font-bold flex-1">${s.t}</span><i class="fas fa-chevron-right text-gray-600 text-xs"></i>`;
-                        list.appendChild(card);
-                    });
-                }
+                document.getElementById('contactPhone').innerText = data.ph || '';
+                document.getElementById('contactEmail').innerText = data.em || '';
+                document.getElementById('saveLabel').innerText = t.save;
+            }
+
+            // WiFi
+            if (data.wn) {
+                document.getElementById('wifiSection').classList.remove('hidden');
+                document.getElementById('ssid').innerText = data.wn;
+                document.getElementById('wifiHint').innerText = t.hint;
+                wifiPass = data.wp;
+            }
+
+            // Socials
+            if (data.soc && data.soc.length > 0) {
+                document.getElementById('socialsSection').classList.remove('hidden');
+                const list = document.getElementById('socialList');
+                data.soc.forEach(s => {
+                    const icon = SOCIAL_ICONS[s.t] || 'fas fa-link';
+                    const url = s.v.startsWith('http') ? s.v : `https://${s.v}`;
+                    const a = document.createElement('a');
+                    a.className = "social-card";
+                    a.href = url; a.target = "_blank";
+                    a.innerHTML = `<i class="${icon} text-xl w-8 text-blue-500"></i><span class="font-bold flex-1">${s.t}</span><i class="fas fa-arrow-right text-[10px] text-gray-700"></i>`;
+                    list.appendChild(a);
+                });
             }
 
             document.getElementById('loader').classList.add('hidden');
@@ -167,30 +193,22 @@
         }
 
         function downloadVCard() {
-            const vcard = `BEGIN:VCARD
-VERSION:3.0
-FN:${globalData.fn} ${globalData.ln}
-ORG:${globalData.comp || ''}
-TEL;TYPE=CELL:${globalData.ph}
-EMAIL:${globalData.em}
-END:VCARD`;
-            const blob = new Blob([vcard], { type: 'text/vcard' });
+            const vcf = `BEGIN:VCARD\nVERSION:3.0\nFN:${rawData.fn} ${rawData.ln}\nTEL;TYPE=CELL:${rawData.ph}\nEMAIL:${rawData.em}\nORG:${rawData.n}\nEND:VCARD`;
+            const blob = new Blob([vcf], { type: 'text/vcard' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
-            a.href = url;
-            a.download = `${globalData.fn}.vcf`;
-            document.body.appendChild(a);
-            a.click();
+            a.href = url; a.download = `${rawData.fn}.vcf`;
+            document.body.appendChild(a); a.click();
             document.body.removeChild(a);
         }
 
         function copyWifi() {
             navigator.clipboard.writeText(wifiPass).then(() => {
-                alert(TRANSLATIONS[window.currentLang].copied);
+                alert(TRANSLATIONS[window.langCode].copied);
             });
         }
 
-        decodeData();
+        init();
     </script>
 </body>
 </html>
