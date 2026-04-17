@@ -26,40 +26,39 @@
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 32px;
+            border-radius: 35px;
             margin-bottom: 24px;
+            overflow: hidden;
         }
         .btn-blue {
             background: linear-gradient(135deg, #0A84FF, #0055FF);
-            transition: transform 0.2s;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 10px 25px rgba(10, 132, 255, 0.3);
         }
         .btn-blue:active {
-            transform: scale(0.95);
+            transform: scale(0.96);
         }
         .social-card {
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 20px;
-            transition: background 0.2s;
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 24px;
+            transition: all 0.2s;
             display: flex;
             align-items: center;
-            padding: 16px;
+            padding: 20px;
             margin-bottom: 12px;
             text-decoration: none;
             color: white;
+            border: 1px solid rgba(255,255,255,0.05);
         }
-        .social-card:hover { background: rgba(255, 255, 255, 0.08); }
-        .logo-box {
-            width: 100px;
-            height: 100px;
-            border-radius: 28px;
-            margin: 0 auto 16px;
-            overflow: hidden;
-            background: rgba(255,255,255,0.05);
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .social-card:hover { 
+            background: rgba(255, 255, 255, 0.1); 
+            transform: translateY(-2px);
         }
-        .logo-img { width: 100%; height: 100%; object-cover: cover; }
+        .name-gradient {
+            background: linear-gradient(to right, #fff, #999);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
     </style>
 </head>
 <body>
@@ -69,52 +68,60 @@
 
     <div id="content" class="main-container hidden">
         
-        <!-- Header -->
-        <div class="glass p-8 text-center">
-            <div id="logoWrapper" class="logo-box hidden">
-                <img id="logoImg" src="" class="logo-img">
+        <!-- Premium Header -->
+        <div class="glass p-10 text-center relative">
+            <div class="absolute top-0 right-0 p-4 opacity-20">
+                <i class="fas fa-gem text-blue-500"></i>
             </div>
-            <h1 id="mainTitle" class="text-3xl font-black mb-1">OmniQR</h1>
-            <p id="subTitle" class="text-gray-500 font-medium">Business Hub</p>
+            <div id="bizIcon" class="w-24 h-24 bg-blue-500/10 rounded-[30px] flex items-center justify-center mx-auto mb-6 border border-blue-500/20">
+                <i class="fas fa-briefcase text-4xl text-blue-500"></i>
+            </div>
+            <h1 id="mainTitle" class="text-3xl font-black mb-1 name-gradient">OmniQR</h1>
+            <p id="subTitle" class="text-gray-500 font-bold tracking-widest text-xs uppercase">Premium Business Hub</p>
         </div>
 
-        <!-- Contact Section -->
-        <div id="contactSection" class="glass p-8 hidden">
-            <h2 class="text-xs font-black text-gray-500 tracking-widest uppercase mb-4">Contact</h2>
-            <div class="text-center mb-6">
-                 <p id="contactPhone" class="text-2xl font-black text-blue-500 mb-1"></p>
-                 <p id="contactEmail" class="text-gray-400 font-medium"></p>
-            </div>
-            <button onclick="downloadVCard()" class="w-full h-16 btn-blue rounded-2xl font-black text-lg shadow-xl shadow-blue-500/20 flex items-center justify-center">
-                <i class="fas fa-user-plus mr-3"></i> <span id="saveLabel">SAVE TO CONTACTS</span>
-            </button>
-        </div>
-
-        <!-- WiFi Section -->
-        <div id="wifiSection" class="glass p-6 hidden">
-            <h2 class="text-xs font-black text-gray-500 tracking-widest uppercase mb-4">Wi-Fi</h2>
-            <div class="flex items-center justify-between bg-white/5 p-4 rounded-2xl">
-                <div class="flex items-center">
-                    <i class="fas fa-wifi text-blue-500 mr-4"></i>
-                    <div>
-                        <p id="ssid" class="font-bold">Network Name</p>
-                        <p class="text-[10px] text-gray-500 uppercase tracking-wider" id="wifiHint">Tap to copy password</p>
-                    </div>
+        <!-- Unified Contact Card -->
+        <div id="contactSection" class="glass p-1 hidden">
+            <div class="p-8">
+                <h2 class="text-[10px] font-black text-blue-500 tracking-[0.2em] uppercase mb-6">Contact Passport</h2>
+                <div class="space-y-1 mb-8">
+                     <p id="contactPhone" class="text-3xl font-black text-white"></p>
+                     <p id="contactEmail" class="text-gray-500 font-medium text-lg"></p>
                 </div>
-                <button onclick="copyWifi()" class="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center">
-                    <i class="fas fa-copy text-blue-500"></i>
+                <button onclick="downloadVCard()" class="w-full h-16 btn-blue rounded-2xl font-black text-lg flex items-center justify-center">
+                    <i class="fas fa-user-plus mr-3"></i> <span id="saveLabel">SAVE TO CONTACTS</span>
                 </button>
             </div>
         </div>
 
-        <!-- Social List -->
-        <div id="socialsSection" class="glass p-6 hidden">
-            <h2 class="text-xs font-black text-gray-500 tracking-widest uppercase mb-4">Links & Social</h2>
+        <!-- Professional WiFi Card -->
+        <div id="wifiSection" class="glass hidden">
+            <div class="p-8">
+                <h2 class="text-[10px] font-black text-blue-500 tracking-[0.2em] uppercase mb-4">Guest Wi-Fi</h2>
+                <div class="flex items-center justify-between bg-white/5 p-5 rounded-[24px] border border-white/5">
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-blue-500/20 rounded-xl flex items-center justify-center mr-4">
+                            <i class="fas fa-wifi text-blue-500"></i>
+                        </div>
+                        <div>
+                            <p id="ssid" class="font-bold text-lg">Network</p>
+                            <p class="text-[10px] text-gray-500 uppercase font-black" id="wifiHint">Tap to copy</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Social Hub -->
+        <div id="socialsSection" class="hidden">
+            <div class="px-2 mb-4">
+                <h2 class="text-[10px] font-black text-blue-500 tracking-[0.2em] uppercase">Digital Channels</h2>
+            </div>
             <div id="socialList"></div>
         </div>
 
-        <footer class="text-center py-6">
-            <p class="text-gray-600 text-[10px] font-black tracking-widest uppercase">OmniQR Business Professional Edition</p>
+        <footer class="text-center py-10 opacity-30">
+            <p class="text-[9px] font-black tracking-[0.3em] uppercase">OmniQR Business Professional Edition</p>
         </footer>
     </div>
 
@@ -140,9 +147,20 @@
             const d = params.get('d');
             if (!d) return;
             try {
-                rawData = JSON.parse(decodeURIComponent(escape(atob(d))));
+                // More robust base64 decoding for UTF-8
+                const decoded = atob(d);
+                const escaped = escape(decoded);
+                const uriDecoded = decodeURIComponent(escaped);
+                rawData = JSON.parse(uriDecoded);
                 render(rawData);
-            } catch (e) { console.error(e); }
+            } catch (e) { 
+                console.error("Decode fail", e);
+                // Fallback decode if standard fails
+                try {
+                    rawData = JSON.parse(decodeURIComponent(escape(atob(d))));
+                    render(rawData);
+                } catch(err) { console.error("Critical decode fail"); }
+            }
         }
 
         function render(data) {
@@ -151,21 +169,17 @@
             window.langCode = lang;
 
             // Header info
-            document.getElementById('mainTitle').innerText = data.n;
-            if (data.logo) {
-                document.getElementById('logoWrapper').classList.remove('hidden');
-                document.getElementById('logoImg').src = data.logo;
-            }
-
-            // Contact
-            if (data.fn || data.ph) {
+            document.getElementById('mainTitle').innerText = data.n || "OmniQR";
+            
+            // vCard Section - Detailed check
+            if (data.fn || data.ln || data.ph || data.em) {
                 document.getElementById('contactSection').classList.remove('hidden');
                 document.getElementById('contactPhone').innerText = data.ph || '';
                 document.getElementById('contactEmail').innerText = data.em || '';
                 document.getElementById('saveLabel').innerText = t.save;
             }
 
-            // WiFi
+            // WiFi Section
             if (data.wn) {
                 document.getElementById('wifiSection').classList.remove('hidden');
                 document.getElementById('ssid').innerText = data.wn;
@@ -173,17 +187,18 @@
                 wifiPass = data.wp;
             }
 
-            // Socials
+            // Socials Section
             if (data.soc && data.soc.length > 0) {
                 document.getElementById('socialsSection').classList.remove('hidden');
                 const list = document.getElementById('socialList');
+                list.innerHTML = ""; // Clear loader/previous
                 data.soc.forEach(s => {
                     const icon = SOCIAL_ICONS[s.t] || 'fas fa-link';
                     const url = s.v.startsWith('http') ? s.v : `https://${s.v}`;
                     const a = document.createElement('a');
                     a.className = "social-card";
                     a.href = url; a.target = "_blank";
-                    a.innerHTML = `<i class="${icon} text-xl w-8 text-blue-500"></i><span class="font-bold flex-1">${s.t}</span><i class="fas fa-arrow-right text-[10px] text-gray-700"></i>`;
+                    a.innerHTML = `<i class="${icon} text-2xl w-10 text-blue-500"></i><span class="font-black text-lg flex-1">${s.t}</span><i class="fas fa-chevron-right text-gray-700"></i>`;
                     list.appendChild(a);
                 });
             }
@@ -193,19 +208,13 @@
         }
 
         function downloadVCard() {
-            const vcf = `BEGIN:VCARD\nVERSION:3.0\nFN:${rawData.fn} ${rawData.ln}\nTEL;TYPE=CELL:${rawData.ph}\nEMAIL:${rawData.em}\nORG:${rawData.n}\nEND:VCARD`;
+            const vcf = `BEGIN:VCARD\nVERSION:3.0\nFN:${rawData.fn || ''} ${rawData.ln || ''}\nTEL;TYPE=CELL:${rawData.ph || ''}\nEMAIL:${rawData.em || ''}\nORG:${rawData.n || ''}\nEND:VCARD`;
             const blob = new Blob([vcf], { type: 'text/vcard' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
-            a.href = url; a.download = `${rawData.fn}.vcf`;
+            a.href = url; a.download = `${rawData.fn || 'Contact'}.vcf`;
             document.body.appendChild(a); a.click();
             document.body.removeChild(a);
-        }
-
-        function copyWifi() {
-            navigator.clipboard.writeText(wifiPass).then(() => {
-                alert(TRANSLATIONS[window.langCode].copied);
-            });
         }
 
         init();
