@@ -7,84 +7,157 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { background-color: #F3F4F6; color: #1F2937; font-family: 'Inter', sans-serif; }
-        .premium-card { background: white; border-radius: 32px; box-shadow: 0 10px 40px rgba(0,0,0,0.05); }
-        .social-btn { transition: transform 0.2s; }
-        .social-btn:active { transform: scale(0.95); }
+        body {
+            background-color: #000;
+            color: #fff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .glass {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 32px;
+        }
+        .btn-blue {
+            background: linear-gradient(135deg, #0A84FF, #0055FF);
+            transition: transform 0.2s;
+        }
+        .btn-blue:active {
+            transform: scale(0.95);
+        }
+        .social-card {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 20px;
+            transition: background 0.2s;
+        }
+        .social-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+        }
     </style>
 </head>
-<body class="flex flex-col items-center justify-center min-h-screen p-6">
-
-    <div id="content" class="w-full max-w-sm text-center">
-        <div class="mb-8">
-            <h1 id="biz-name" class="text-3xl font-black tracking-tight text-gray-900">Business Name</h1>
-            <p id="welcome" class="text-gray-400 mt-2 font-medium italic"></p>
-        </div>
-
-        <div id="wifi-box" class="hidden premium-card p-6 mb-6 border border-white">
-            <div class="bg-blue-50 w-16 h-16 rounded-3xl flex items-center justify-center mx-auto mb-4 text-blue-500">
-                <i class="fas fa-wifi text-2xl"></i>
+<body>
+    <div id="content" class="w-full max-w-md p-6 hidden">
+        <div class="glass p-8 text-center mb-6">
+            <div class="w-20 h-20 bg-blue-500/10 rounded-3xl flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-qrcode text-4xl text-blue-500"></i>
             </div>
-            <h3 id="wifi-label" class="text-[10px] uppercase font-bold tracking-[0.2em] text-gray-400 mb-1"></h3>
-            <p id="wifi-ssid" class="text-xl font-black text-gray-800 mb-4"></p>
-            <button onclick="copyWifi()" id="copy-btn" class="w-full py-4 bg-gray-900 text-white rounded-2xl font-bold text-sm uppercase tracking-widest shadow-lg shadow-gray-200"></button>
-            <p id="status" class="text-green-500 text-[10px] font-bold mt-2 opacity-0 transition-opacity">COPIED</p>
+            <h1 id="bizName" class="text-3xl font-black mb-2">Business Name</h1>
+            <p id="tagline" class="text-gray-500 font-medium">OmniQR Smart Connect</p>
         </div>
 
-        <div id="links" class="space-y-4"></div>
-
-        <div class="mt-12 opacity-30">
-            <p class="text-[10px] font-bold tracking-widest uppercase">Powered by OmniQR</p>
+        <div id="wifiSection" class="glass p-6 mb-6 hidden">
+            <h2 class="text-xs font-black text-gray-500 tracking-widest uppercase mb-4" id="wifiTitle">Wi-Fi Access</h2>
+            <div class="flex items-center justify-between bg-white/5 p-4 rounded-2xl">
+                <div class="flex items-center">
+                    <i class="fas fa-wifi text-blue-500 mr-4"></i>
+                    <div>
+                        <p id="ssid" class="font-bold">SSID</p>
+                        <p class="text-xs text-gray-400" id="wifiSub">Tap to copy password</p>
+                    </div>
+                </div>
+                <button onclick="copyWifi()" class="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center">
+                    <i class="fas fa-copy text-blue-500"></i>
+                </button>
+            </div>
         </div>
+
+        <div id="socialsSection" class="glass p-6">
+            <h2 class="text-xs font-black text-gray-500 tracking-widest uppercase mb-4" id="socialsTitle">Channels</h2>
+            <div id="socialList" class="space-y-3">
+                <!-- Social buttons will be injected here -->
+            </div>
+        </div>
+
+        <footer class="mt-8 text-center">
+            <p class="text-gray-600 text-xs">Powered by OmniQR Business</p>
+        </footer>
+    </div>
+
+    <div id="loader" class="text-blue-500">
+        <i class="fas fa-circle-notch fa-spin fa-2x"></i>
     </div>
 
     <script>
-        const i18n = {
-            tr: { welcome: "Dijital Dünyamıza Hoş Geldiniz", wifi: "Misafir İnterneti", copy: "Şifreyi Kopyala", copied: "Şifre Kopyalandı", visit: "Ziyaret Et" },
-            en: { welcome: "Welcome to our digital space", wifi: "Guest Wi-Fi", copy: "Copy Password", copied: "Password Copied", visit: "Visit Us" },
-            de: { welcome: "Willkommen bei uns", wifi: "Gast Wi-Fi", copy: "Passwort Kopieren", copied: "Kopiert!", visit: "Besuchen" }
+        const TRANSLATIONS = {
+            tr: { wifi: 'Wi-Fi Erişimi', socials: 'Kanallar', wifiSub: 'Şifreyi kopyalamak için dokun', copied: 'Şifre kopyalandı!' },
+            en: { wifi: 'Wi-Fi Access', socials: 'Channels', wifiSub: 'Tap to copy password', copied: 'Password copied!' },
+            de: { wifi: 'WLAN-Zugriff', socials: 'Kanäle', wifiSub: 'Passwort kopieren', copied: 'Passwort kopiert!' },
+            fr: { wifi: 'Accès Wi-Fi', socials: 'Canaux', wifiSub: 'Copier le mot de passe', copied: 'Mot de passe copié!' },
+            es: { wifi: 'Acceso Wi-Fi', socials: 'Canales', wifiSub: 'Copiar contraseña', copied: '¡Contraseña copiada!' }
         };
 
-        function getIcon(v) {
-            v = v.toLowerCase();
-            if(v.includes('instagram')) return 'fab fa-instagram';
-            if(v.includes('twitter') || v.includes('x.com')) return 'fab fa-x-twitter';
-            if(v.includes('tiktok')) return 'fab fa-tiktok';
-            if(v.includes('facebook')) return 'fab fa-facebook';
-            return 'fas fa-link';
+        const SOCIAL_CONFIG = {
+            'Instagram': { icon: 'fa-brands fa-instagram', color: '#E4405F' },
+            'Twitter': { icon: 'fa-brands fa-twitter', color: '#1DA1F2' },
+            'TikTok': { icon: 'fa-brands fa-tiktok', color: '#fff' },
+            'Facebook': { icon: 'fa-brands fa-facebook', color: '#1877F2' },
+            'Web': { icon: 'fas fa-globe', color: '#0A84FF' }
+        };
+
+        let wifiPass = "";
+
+        function decodeData() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const d = urlParams.get('d');
+            if (!d) return;
+
+            try {
+                const decoded = JSON.parse(decodeURIComponent(escape(atob(d))));
+                render(decoded);
+            } catch (e) {
+                console.error("Decoding failed", e);
+            }
         }
 
-        const data = JSON.parse(atob(new URLSearchParams(window.location.search).get('d')));
-        const dict = i18n[data.l || 'en'];
+        function render(data) {
+            const lang = data.l || 'en';
+            const t = TRANSLATIONS[lang] || TRANSLATIONS['en'];
 
-        document.getElementById('biz-name').innerText = data.n;
-        document.getElementById('welcome').innerText = dict.welcome;
+            document.getElementById('bizName').innerText = data.n;
+            document.getElementById('wifiTitle').innerText = t.wifi;
+            document.getElementById('socialsTitle').innerText = t.socials;
+            document.getElementById('wifiSub').innerText = t.wifiSub;
 
-        if(data.wn) {
-            document.getElementById('wifi-box').classList.remove('hidden');
-            document.getElementById('wifi-label').innerText = dict.wifi;
-            document.getElementById('wifi-ssid').innerText = data.wn;
-            document.getElementById('copy-btn').innerText = dict.copy;
-            window.wp = data.wp;
+            if (data.wn) {
+                document.getElementById('wifiSection').classList.remove('hidden');
+                document.getElementById('ssid').innerText = data.wn;
+                wifiPass = data.wp;
+            }
+
+            if (data.soc && data.soc.length > 0) {
+                const list = document.getElementById('socialList');
+                data.soc.forEach(s => {
+                    const conf = SOCIAL_CONFIG[s.t] || { icon: 'fas fa-link', color: '#fff' };
+                    const card = document.createElement('a');
+                    card.href = s.v.startsWith('http') ? s.v : `https://${s.v}`;
+                    card.target = "_blank";
+                    card.className = "flex items-center p-4 social-card";
+                    card.innerHTML = `
+                        <i class="${conf.icon} text-xl mr-4" style="color: ${conf.color}"></i>
+                        <span class="font-bold flex-1">${s.t}</span>
+                        <i class="fas fa-chevron-right text-gray-600 text-xs"></i>
+                    `;
+                    list.appendChild(card);
+                });
+            }
+
+            document.getElementById('loader').classList.add('hidden');
+            document.getElementById('content').classList.remove('hidden');
         }
-
-        data.soc?.forEach(s => {
-            const link = s.v.startsWith('http') ? s.v : `https://${s.v}`;
-            document.getElementById('links').innerHTML += `
-                <a href="${link}" target="_blank" class="premium-card p-5 flex items-center bg-white social-btn border border-gray-100">
-                    <div class="w-10 h-10 bg-gray-50 rounded-xl flex items-center justify-center mr-4 text-gray-800">
-                        <i class="${getIcon(s.v)} text-xl"></i>
-                    </div>
-                    <span class="font-bold text-gray-700 flex-1 text-left">${dict.visit}</span>
-                    <i class="fas fa-arrow-right text-gray-300 text-xs"></i>
-                </a>`;
-        });
 
         function copyWifi() {
-            navigator.clipboard.writeText(window.wp);
-            document.getElementById('status').classList.replace('opacity-0', 'opacity-100');
-            setTimeout(() => document.getElementById('status').classList.replace('opacity-100', 'opacity-0'), 2000);
+            navigator.clipboard.writeText(wifiPass).then(() => {
+                alert(TRANSLATIONS[window.currentLang || 'en'].copied);
+            });
         }
+
+        decodeData();
     </script>
 </body>
 </html>
