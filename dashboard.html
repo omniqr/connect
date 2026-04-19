@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OmniQR | Professional Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #000;
+            color: #fff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            min-height: 100vh;
+        }
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 24px;
+        }
+        .premium-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .premium-card:hover {
+            background: rgba(255, 255, 255, 0.07);
+            transform: translateY(-5px);
+            border-color: rgba(10, 132, 255, 0.3);
+        }
+        .accent-gradient {
+            background: linear-gradient(135deg, #0A84FF, #0055FF);
+        }
+        .loader {
+            border: 3px solid rgba(10, 132, 255, 0.1);
+            border-top: 3px solid #0A84FF;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+    <div class="max-w-6xl mx-auto">
+        <!-- Header -->
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 gap-4">
+            <div>
+                <h1 class="text-4xl font-black tracking-tight mb-2">Business Dashboard</h1>
+                <p class="text-gray-500 font-medium">Manage and track your active QR codes.</p>
+            </div>
+            <div class="glass px-6 py-3 flex items-center gap-3">
+                <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                <span class="text-xs font-bold tracking-widest uppercase opacity-70">Secured with OmniQR Cloud</span>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div id="loading" class="flex flex-col items-center justify-center py-20">
+            <div class="loader mb-4"></div>
+            <p class="text-gray-500 font-medium">Syncing with Cloudflare...</p>
+        </div>
+
+        <div id="empty-state" class="hidden flex flex-col items-center justify-center py-20 glass">
+            <i class="fas fa-qrcode text-6xl text-gray-800 mb-6"></i>
+            <h2 class="text-xl font-bold mb-2">No QRs Found</h2>
+            <p class="text-gray-500 text-center max-w-xs">Generate a QR code in the mobile app to see it displayed here.</p>
+        </div>
+
+        <div id="qr-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Cards injected here -->
+        </div>
+    </div>
+
+    <!-- Analytics Modal -->
+    <div id="modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+        <div class="glass w-full max-w-2xl max-h-[90vh] overflow-y-auto p-8 relative">
+            <button onclick="closeModal()" class="absolute top-6 right-6 text-gray-500 hover:text-white transition-colors">
+                <i class="fas fa-times text-2xl"></i>
+            </button>
+            <div id="modal-content">
+                <!-- Analytics data here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = "https://omniqr-analytics.omniqr-analytics-stats.workers.dev";
+        const params = new URLSearchParams(window.location.search);
+        const userId = params.get('u');
+
+        async function init() {
+            if (!userId) {
+                document.getElementById('loading').innerHTML = `
+                    <div class="text-red-500 text-center">
+                        <i class="fas fa-exclamation-triangle text-4xl mb-4"></i>
+                        <h2 class="text-xl font-bold">Unauthorized Access</h2>
+                        <p class="text-sm mt-2 opacity-70">Please open the dashboard via the OmniQR mobile app.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/qrs?u=${userId}`);
+                const data = await response.json();
+                
+                document.getElementById('loading').classList.add('hidden');
+                
+                if (!data || data.length === 0) {
+                    document.getElementById('empty-state').classList.remove('hidden');
+                    return;
+                }
+
+                renderGrid(data);
+            } catch (error) {
+                console.error("Fetch error:", error);
+                document.getElementById('loading').innerHTML = `<p class="text-red-400">Error connecting to server. Please try again.</p>`;
+            }
+        }
+
+        function renderGrid(qrs) {
+            const grid = document.getElementById('qr-grid');
+            grid.innerHTML = qrs.map(qr => `
+                <div class="glass p-6 premium-card cursor-pointer" onclick="openAnalytics('${qr.id}', '${qr.name}')">
+                    <div class="flex justify-between items-start mb-6">
+                        <div class="w-12 h-12 accent-gradient rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/20">
+                            <i class="fas fa-qrcode text-xl"></i>
+                        </div>
+                        <div class="text-[10px] font-black tracking-widest text-blue-500 bg-blue-500/10 px-3 py-1 rounded-full uppercase">
+                            Active
+                        </div>
+                    </div>
+                    <h3 class="text-xl font-bold mb-1 truncate">${qr.name}</h3>
+                    <p class="text-xs text-gray-500 font-medium mb-6 uppercase tracking-wider">Created: ${new Date(qr.created_at).toLocaleDateString()}</p>
+                    
+                    <div class="pt-6 border-t border-white/5 flex justify-between items-center">
+                        <span class="text-xs font-bold text-gray-400">VIEW INSIGHTS</span>
+                        <i class="fas fa-arrow-right text-xs text-blue-500"></i>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function openAnalytics(id, name) {
+            const modal = document.getElementById('modal');
+            const content = document.getElementById('modal-content');
+            modal.classList.remove('hidden');
+            content.innerHTML = `<div class="flex justify-center p-20"><div class="loader"></div></div>`;
+
+            try {
+                const res = await fetch(`${API_URL}/stats?id=${id}&period=all`);
+                const stats = await res.json();
+                
+                const totalClicks = stats.clicks?.reduce((acc, c) => acc + c.count, 0) || 0;
+
+                content.innerHTML = `
+                    <div class="mb-8">
+                        <h2 class="text-3xl font-black mb-2">${name}</h2>
+                        <p class="text-gray-500 text-sm">Performance metrics for this destination.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
+                        <div class="bg-white/5 p-6 rounded-3xl border border-white/5">
+                            <p class="text-[10px] font-black text-blue-500 tracking-widest uppercase mb-2">Visits</p>
+                            <p class="text-3xl font-black">${stats.visits || 0}</p>
+                        </div>
+                        <div class="bg-white/5 p-6 rounded-3xl border border-white/5">
+                            <p class="text-[10px] font-black text-green-500 tracking-widest uppercase mb-2">vCard Saves</p>
+                            <p class="text-3xl font-black">${stats.vcard || 0}</p>
+                        </div>
+                        <div class="bg-white/5 p-6 rounded-3xl border border-white/5">
+                            <p class="text-[10px] font-black text-orange-500 tracking-widest uppercase mb-2">Link Clicks</p>
+                            <p class="text-3xl font-black">${totalClicks}</p>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 class="text-xs font-black tracking-widest text-gray-500 uppercase mb-6">Channel Performance</h3>
+                        <div class="space-y-6">
+                            ${stats.clicks && stats.clicks.length > 0 ? stats.clicks.map(c => `
+                                <div>
+                                    <div class="flex justify-between text-sm font-bold mb-2">
+                                        <span>${c.event_label}</span>
+                                        <span class="text-blue-500">${c.count} clicks</span>
+                                    </div>
+                                    <div class="h-2 w-full bg-white/5 rounded-full overflow-hidden">
+                                        <div class="h-full accent-gradient" style="width: ${Math.min(100, (c.count / (stats.visits || 1)) * 100)}%"></div>
+                                    </div>
+                                </div>
+                            `).join('') : '<p class="text-gray-600 text-sm italic">No interaction data available yet.</p>'}
+                        </div>
+                    </div>
+                `;
+            } catch (error) {
+                content.innerHTML = `<p class="text-red-400">Failed to load analytics.</p>`;
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.add('hidden');
+        }
+
+        init();
+    </script>
+</body>
+</html>
