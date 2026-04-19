@@ -240,8 +240,23 @@
                 document.getElementById('contactSection').classList.remove('hidden');
                 document.getElementById('contactName').innerText = `${data.fn || ''} ${data.ln || ''}`.trim() || data.n || 'Contact';
                 document.getElementById('contactRole').innerText = data.n || 'Business Partner';
-                document.getElementById('contactPhone').innerText = data.ph || 'No Phone';
-                document.getElementById('contactEmail').innerText = data.em || 'No Email';
+                
+                // Show/Hide phone
+                if (data.ph) {
+                    document.getElementById('contactPhone').parentElement.classList.remove('hidden');
+                    document.getElementById('contactPhone').innerText = data.ph;
+                } else {
+                    document.getElementById('contactPhone').parentElement.classList.add('hidden');
+                }
+
+                // Show/Hide email
+                if (data.em) {
+                    document.getElementById('contactEmail').parentElement.classList.remove('hidden');
+                    document.getElementById('contactEmail').innerText = data.em;
+                } else {
+                    document.getElementById('contactEmail').parentElement.classList.add('hidden');
+                }
+                
                 document.getElementById('saveLabel').innerText = t.save;
             }
 
