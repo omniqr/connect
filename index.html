@@ -148,7 +148,7 @@
             if (!qrId || qrId === "unknown") return;
             fetch(`${API_URL}/track`, {
                 method: "POST",
-                mode: "no-cors",
+                mode: "cors",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ qr_id: qrId, event_type: type, event_label: label })
             }).catch(e => console.error("Track error", e));
