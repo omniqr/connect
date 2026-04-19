@@ -254,6 +254,13 @@
 
         function trackEvent(type, label = null) {
             if (!qrId || qrId === "unknown") return;
+            // Deduplication logic (1 visit/click per day per device)
+            const dedupeKey = `tracked_${qrId}_${type}_${label || ''}`;
+            const lastTrack = localStorage.getItem(dedupeKey);
+            const now = Date.now();
+            if (lastTrack && now - parseInt(lastTrack) < 24 * 60 * 60 * 1000) return;
+            localStorage.setItem(dedupeKey, now.toString());
+
             fetch(`${API_URL}/track`, {
                 method: "POST",
                 mode: "cors",
@@ -280,30 +287,51 @@
         let wifiPass = "";
         let rawData = null;
 
-        function init() {
+        async function init() {
             const params = new URLSearchParams(window.location.search);
             const d = params.get('d');
-            if (!d) return;
-            try {
-                // More robust base64 decoding for UTF-8
-                const decoded = atob(d);
-                const escaped = escape(decoded);
-                const uriDecoded = decodeURIComponent(escaped);
-                rawData = JSON.parse(uriDecoded);
-                render(rawData);
-            } catch (e) { 
-                console.error("Decode fail", e);
-                // Fallback decode if standard fails
+            const id = params.get('id');
+            const loader = document.getElementById('loader');
+            const content = document.getElementById('content');
+
+            if (id) {
+                qrId = id;
                 try {
-                    rawData = JSON.parse(decodeURIComponent(escape(atob(d))));
+                    const res = await fetch(`${API_URL}/qr-data?id=${id}`);
+                    if (res.ok) {
+                        rawData = await res.json();
+                        render(rawData);
+                    } else {
+                        loader.innerHTML = '<div class="text-white font-bold">QR ID Not Found</div>';
+                    }
+                } catch (e) {
+                    loader.innerHTML = '<div class="text-white font-bold">Connection Error</div>';
+                }
+            } else if (d) {
+                try {
+                    const decoded = atob(d);
+                    const uriDecoded = decodeURIComponent(escape(decoded));
+                    rawData = JSON.parse(uriDecoded);
                     render(rawData);
-                } catch(err) { console.error("Critical decode fail"); }
+                } catch (e) { 
+                    try {
+                        rawData = JSON.parse(decodeURIComponent(escape(atob(d))));
+                        render(rawData);
+                    } catch(err) { 
+                        loader.innerHTML = '<div class="text-white font-bold">Invalid QR Data</div>';
+                    }
+                }
+            } else {
+                loader.innerHTML = '<div class="text-white font-bold text-center">OmniQR Connect<br><span class="text-[10px] opacity-50 uppercase tracking-widest">Awaiting Data</span></div>';
             }
         }
 
         function render(data) {
-            qrId = data.id || "legacy";
+            qrId = data.id || qrId;
             trackEvent("visit");
+            
+            document.getElementById('loader').classList.add('hidden');
+            document.getElementById('content').classList.remove('hidden');
 
             const lang = data.l || 'en';
             const t = TRANSLATIONS[lang] || TRANSLATIONS['en'];
