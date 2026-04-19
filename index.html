@@ -17,8 +17,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #0A84FF;
-            --accent: #5E5CE6;
+            --primary: #5856D6;
+            --primary-rgb: 88, 86, 214;
+            --accent: #AF52DE;
             --glass: rgba(255, 255, 255, 0.03);
             --border: rgba(255, 255, 255, 0.08);
             --bg: #000;
@@ -27,17 +28,17 @@
         }
 
         /* Themes */
-        .theme-oled { /* Default OLED */ }
+        .theme-oled { /* Default Deep Indigo */ }
         .theme-crystal {
-            --primary: #007AFF; --accent: #8E8E93; --bg: #F2F2F7; --text: #000; --subtext: #666;
+            --primary: #007AFF; --primary-rgb: 0, 122, 255; --accent: #8E8E93; --bg: #F2F2F7; --text: #000; --subtext: #666;
             --glass: rgba(0,0,0,0.03); --border: rgba(0,0,0,0.1);
         }
         .theme-gold {
-            --primary: #D4AF37; --accent: #FFD700; --bg: #0C0C0C; --text: #fff; --subtext: #999;
+            --primary: #D4AF37; --primary-rgb: 212, 175, 55; --accent: #FFD700; --bg: #0C0C0C; --text: #fff; --subtext: #999;
             --border: rgba(212, 175, 55, 0.2);
         }
         .theme-blue {
-            --primary: #00D2FF; --accent: #3A7BD5; --bg: #001219; --text: #fff; --subtext: #A9D6E5;
+            --primary: #00D2FF; --primary-rgb: 0, 210, 255; --accent: #3A7BD5; --bg: #001219; --text: #fff; --subtext: #A9D6E5;
             --border: rgba(0, 210, 255, 0.2);
         }
 
@@ -177,10 +178,10 @@
         <!-- Premium Header -->
         <div class="glass p-10 text-center relative">
             <div class="absolute top-0 right-0 p-4 opacity-20">
-                <i class="fas fa-gem text-blue-500"></i>
+                <i class="fas fa-gem" style="color: var(--primary)"></i>
             </div>
-            <div id="bizIcon" class="w-24 h-24 bg-blue-500/10 rounded-[30px] flex items-center justify-center mx-auto mb-6 border border-blue-500/20">
-                <i class="fas fa-briefcase text-4xl text-blue-500"></i>
+            <div id="bizIcon" class="w-24 h-24 rounded-[30px] flex items-center justify-center mx-auto mb-6 border" style="background: rgba(var(--primary-rgb), 0.1); border-color: rgba(var(--primary-rgb), 0.2);">
+                <i class="fas fa-briefcase text-4xl" style="color: var(--primary)"></i>
             </div>
             <h1 id="mainTitle" class="text-3xl font-black mb-1 name-gradient">OmniQR</h1>
             <p id="subTitle" class="text-gray-500 font-bold tracking-widest text-[9px] uppercase">Business Profile</p>
@@ -189,19 +190,19 @@
         <!-- Unified Contact Card -->
         <div id="contactSection" class="glass hidden overflow-hidden">
             <div class="p-8">
-                <h2 class="text-[9px] font-black text-blue-500 tracking-[0.3em] uppercase mb-6 opacity-80">Identity Card</h2>
+                <h2 class="text-[9px] font-black tracking-[0.3em] uppercase mb-6 opacity-80" style="color: var(--primary)">Identity Card</h2>
                 <div class="mb-8">
-                     <p id="contactName" class="text-3xl font-black text-white mb-2"></p>
-                     <p id="contactRole" class="text-gray-500 font-bold text-xs tracking-widest uppercase opacity-60"></p>
+                     <p id="contactName" class="text-3xl font-black mb-2" style="color: var(--text)"></p>
+                     <p id="contactRole" class="font-bold text-xs tracking-widest uppercase opacity-60" style="color: var(--subtext)"></p>
                 </div>
                 <div class="space-y-4 mb-8">
                     <div class="flex items-center gap-4">
-                        <i class="fas fa-phone text-blue-500 w-5"></i>
-                        <p id="contactPhone" class="text-lg font-bold text-white/90"></p>
+                        <i class="fas fa-phone w-5" style="color: var(--primary)"></i>
+                        <p id="contactPhone" class="text-lg font-bold" style="color: var(--text)"></p>
                     </div>
                     <div class="flex items-center gap-4">
-                        <i class="fas fa-envelope text-blue-500 w-5"></i>
-                        <p id="contactEmail" class="text-sm font-medium text-gray-400"></p>
+                        <i class="fas fa-envelope w-5" style="color: var(--primary)"></i>
+                        <p id="contactEmail" class="text-sm font-medium" style="color: var(--subtext)"></p>
                     </div>
                 </div>
                 <button onclick="downloadVCard()" class="w-full h-16 btn-blue rounded-2xl font-black text-sm tracking-widest flex items-center justify-center">
@@ -213,15 +214,15 @@
         <!-- Professional WiFi Card -->
         <div id="wifiSection" class="glass hidden">
             <div class="p-8">
-                <h2 class="text-[10px] font-black text-blue-500 tracking-[0.2em] uppercase mb-4">Guest Wi-Fi</h2>
-                <div class="flex items-center justify-between bg-white/5 p-5 rounded-[24px] border border-white/5">
+                <h2 class="text-[10px] font-black tracking-[0.2em] uppercase mb-4" style="color: var(--primary)">Guest Wi-Fi</h2>
+                <div class="flex items-center justify-between p-5 rounded-[24px] border" style="background: rgba(255,255,255,0.02); border-color: var(--border)">
                     <div class="flex items-center">
-                        <div class="w-12 h-12 bg-blue-500/20 rounded-xl flex items-center justify-center mr-4">
-                            <i class="fas fa-wifi text-blue-500"></i>
+                        <div class="w-12 h-12 rounded-xl flex items-center justify-center mr-4" style="background: rgba(var(--primary-rgb), 0.2)">
+                            <i class="fas fa-wifi" style="color: var(--primary)"></i>
                         </div>
                         <div>
-                            <p id="ssid" class="font-bold text-lg">Network</p>
-                            <p class="text-[10px] text-gray-500 uppercase font-black" id="wifiHint">Tap to copy</p>
+                            <p id="ssid" class="font-bold text-lg" style="color: var(--text)">Network</p>
+                            <p class="text-[10px] uppercase font-black" id="wifiHint" style="color: var(--subtext)">Tap to copy</p>
                         </div>
                     </div>
                 </div>
@@ -231,20 +232,20 @@
         <!-- Social Hub -->
         <div id="socialsSection" class="hidden">
             <div class="px-2 mb-4">
-                <h2 class="text-[10px] font-black text-blue-500 tracking-[0.2em] uppercase">Digital Channels</h2>
+                <h2 class="text-[10px] font-black tracking-[0.2em] uppercase" style="color: var(--primary)">Digital Channels</h2>
             </div>
             <div id="socialList"></div>
         </div>
 
         <!-- Professional Made With Badge -->
         <div class="flex flex-col items-center justify-center py-12 opacity-80 decoration-none">
-            <a href="#" class="inline-flex items-center px-5 py-2.5 rounded-full glass border border-white/10 no-underline hover:bg-white/10 transition-all">
-                <div class="w-6 h-6 bg-blue-500 rounded-lg flex items-center justify-center mr-3 shadow-lg shadow-blue-500/20">
-                    <i class="fas fa-qrcode text-[10px] text-white"></i>
+            <a href="#" class="inline-flex items-center px-5 py-2.5 rounded-full glass border no-underline hover:bg-white/10 transition-all" style="border-color: var(--border)">
+                <div class="w-6 h-6 rounded-lg flex items-center justify-center mr-3 shadow-lg" style="background: var(--primary); shadow-color: var(--primary)">
+                    <i class="fas fa-qrcode text-[10px]" style="color: #fff"></i>
                 </div>
-                <span class="text-[11px] font-bold tracking-wide text-gray-300">Created with <span class="text-white">OmniQR Business</span></span>
+                <span class="text-[11px] font-bold tracking-wide" style="color: var(--subtext)">Created with <span style="color: var(--text)">OmniQR Business</span></span>
             </a>
-            <p class="text-[9px] font-black tracking-[0.4em] uppercase text-gray-600 mt-6">Secure Business Infrastructure</p>
+            <p class="text-[9px] font-black tracking-[0.4em] uppercase mt-6" style="color: var(--subtext); opacity: 0.5;">Secure Business Infrastructure</p>
         </div>
     </div>
 
