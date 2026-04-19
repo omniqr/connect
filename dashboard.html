@@ -142,6 +142,15 @@
             `).join('');
         }
 
+        function getFlagEmoji(countryCode) {
+            if (!countryCode || countryCode === 'XX') return '🌍';
+            const codePoints = countryCode
+                .toUpperCase()
+                .split('')
+                .map(char => 127397 + char.charCodeAt(0));
+            return String.fromCodePoint(...codePoints);
+        }
+
         async function openAnalytics(id, name) {
             const modal = document.getElementById('modal');
             const content = document.getElementById('modal-content');
@@ -172,6 +181,21 @@
                         <div class="bg-white/5 p-6 rounded-3xl border border-white/5">
                             <p class="text-[10px] font-black text-orange-500 tracking-widest uppercase mb-2">Link Clicks</p>
                             <p class="text-3xl font-black">${totalClicks}</p>
+                        </div>
+                    </div>
+
+                    <div class="mb-10">
+                        <h3 class="text-xs font-black tracking-widest text-gray-500 uppercase mb-6">Geographical Distribution</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            ${stats.countries && stats.countries.length > 0 ? stats.countries.map(c => `
+                                <div class="bg-white/5 p-4 rounded-2xl flex items-center justify-between border border-white/5">
+                                    <div class="flex items-center gap-3">
+                                        <span class="text-2xl">${getFlagEmoji(c.country)}</span>
+                                        <span class="font-bold text-sm">${c.country === 'XX' ? 'Global' : c.country}</span>
+                                    </div>
+                                    <span class="text-blue-500 font-black text-sm">${c.count} scans</span>
+                                </div>
+                            `).join('') : '<p class="text-gray-600 text-sm italic">Waiting for geographical data...</p>'}
                         </div>
                     </div>
 
