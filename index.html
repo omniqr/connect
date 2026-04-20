@@ -196,7 +196,6 @@
                 <h2 class="text-[9px] font-black tracking-[0.3em] uppercase mb-6 opacity-80" style="color: var(--primary)">Identity Card</h2>
                 <div class="mb-8">
                      <p id="contactName" class="text-3xl font-black mb-2" style="color: var(--text)"></p>
-                     <p id="contactRole" class="font-bold text-xs tracking-widest uppercase opacity-60" style="color: var(--subtext)"></p>
                 </div>
                 <div class="space-y-4 mb-8">
                     <div class="flex items-center gap-4">
@@ -205,7 +204,7 @@
                     </div>
                     <div class="flex items-center gap-4">
                         <i class="fas fa-envelope w-5" style="color: var(--primary)"></i>
-                        <p id="contactEmail" class="text-sm font-medium" style="color: var(--subtext)"></p>
+                        <p id="contactEmail" class="text-sm font-medium" style="color: #ffffff"></p>
                     </div>
                 </div>
                 <button onclick="downloadVCard()" class="w-full h-16 btn-blue rounded-2xl font-black text-sm tracking-widest flex items-center justify-center">
@@ -294,7 +293,7 @@
             if (value.startsWith('http')) return value;
             switch (type) {
                 case 'Instagram': return `https://instagram.com/${value.replace('@', '')}`;
-                case 'WhatsApp': return `https://wa.me/${value.replace(/\D/g, '')}`;
+                case 'WhatsApp': return `https://wa.me/${value.replace(/\\D/g, '')}`;
                 case 'Twitter': return `https://x.com/${value.replace('@', '')}`;
                 case 'LinkedIn': return `https://linkedin.com/in/${value}`;
                 case 'TikTok': return `https://tiktok.com/@${value.replace('@', '')}`;
@@ -374,7 +373,6 @@
             if (data.fn || data.ln || data.ph || data.em) {
                 document.getElementById('contactSection').classList.remove('hidden');
                 document.getElementById('contactName').innerText = `${data.fn || ''} ${data.ln || ''}`.trim() || data.n || 'Contact';
-                document.getElementById('contactRole').innerText = data.n || 'Business Partner';
                 
                 // Show/Hide phone
                 if (data.ph) {
