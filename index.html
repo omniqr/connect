@@ -281,13 +281,28 @@
 
         const SOCIAL_ICONS = {
             'Instagram': 'fa-brands fa-instagram',
+            'WhatsApp': 'fa-brands fa-whatsapp',
+            'Website': 'fas fa-globe',
+            'LinkedIn': 'fa-brands fa-linkedin',
             'Twitter': 'fa-brands fa-twitter',
             'TikTok': 'fa-brands fa-tiktok',
-            'LinkedIn': 'fa-brands fa-linkedin',
             'Facebook': 'fa-brands fa-facebook',
-            'WhatsApp': 'fa-brands fa-whatsapp',
-            'Web': 'fas fa-globe'
+            'Telegram': 'fa-brands fa-telegram'
         };
+
+        function getPlatformUrl(type, value) {
+            if (value.startsWith('http')) return value;
+            switch (type) {
+                case 'Instagram': return `https://instagram.com/${value.replace('@', '')}`;
+                case 'WhatsApp': return `https://wa.me/${value.replace(/\D/g, '')}`;
+                case 'Twitter': return `https://x.com/${value.replace('@', '')}`;
+                case 'LinkedIn': return `https://linkedin.com/in/${value}`;
+                case 'TikTok': return `https://tiktok.com/@${value.replace('@', '')}`;
+                case 'Facebook': return `https://facebook.com/${value}`;
+                case 'Telegram': return `https://t.me/${value.replace('@', '')}`;
+                default: return `https://${value}`;
+            }
+        }
 
         let wifiPass = "";
         let rawData = null;
@@ -395,7 +410,7 @@
                 list.innerHTML = ""; 
                 data.soc.forEach(s => {
                     const icon = SOCIAL_ICONS[s.t] || 'fas fa-link';
-                    const url = s.v.startsWith('http') ? s.v : `https://${s.v}`;
+                    const url = getPlatformUrl(s.t, s.v);
                     const a = document.createElement('a');
                     a.className = "social-card";
                     a.href = url; a.target = "_blank";
