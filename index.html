@@ -180,8 +180,11 @@
             <div class="absolute top-0 right-0 p-4 opacity-20">
                 <i class="fas fa-gem" style="color: var(--primary)"></i>
             </div>
-            <div id="bizIcon" class="w-24 h-24 rounded-[30px] flex items-center justify-center mx-auto mb-6 border" style="background: rgba(var(--primary-rgb), 0.1); border-color: rgba(var(--primary-rgb), 0.2);">
-                <i class="fas fa-briefcase text-4xl" style="color: var(--primary)"></i>
+            <div id="logoContainer" class="w-24 h-24 rounded-[30px] flex items-center justify-center mx-auto mb-6 border overflow-hidden" style="background: rgba(var(--primary-rgb), 0.1); border-color: rgba(var(--primary-rgb), 0.2);">
+                <div id="logoWrapper" class="w-full h-full flex items-center justify-center">
+                    <i id="logoFallback" class="fas fa-briefcase text-4xl" style="color: var(--primary)"></i>
+                    <img id="logoImg" class="hidden w-full h-full object-cover" />
+                </div>
             </div>
             <h1 id="mainTitle" class="text-3xl font-black mb-1 name-gradient">OmniQR</h1>
             <p id="subTitle" class="text-gray-500 font-bold tracking-widest text-[9px] uppercase">Business Profile</p>
@@ -215,7 +218,7 @@
         <div id="wifiSection" class="glass hidden">
             <div class="p-8">
                 <h2 class="text-[10px] font-black tracking-[0.2em] uppercase mb-4" style="color: var(--primary)">Guest Wi-Fi</h2>
-                <div class="flex items-center justify-between p-5 rounded-[24px] border" style="background: rgba(255,255,255,0.02); border-color: var(--border)">
+                <div onclick="copyWifi()" class="cursor-pointer flex items-center justify-between p-5 rounded-[24px] border active:scale-95 transition-transform" style="background: rgba(255,255,255,0.02); border-color: var(--border)">
                     <div class="flex items-center">
                         <div class="w-12 h-12 rounded-xl flex items-center justify-center mr-4" style="background: rgba(var(--primary-rgb), 0.2)">
                             <i class="fas fa-wifi" style="color: var(--primary)"></i>
@@ -225,6 +228,7 @@
                             <p class="text-[10px] uppercase font-black" id="wifiHint" style="color: var(--subtext)">Tap to copy</p>
                         </div>
                     </div>
+                    <i class="fas fa-copy opacity-20"></i>
                 </div>
             </div>
         </div>
@@ -346,7 +350,12 @@
             // Header info
             document.getElementById('mainTitle').innerText = data.n || "OmniQR";
             
-            // Identity Section
+            // Logo Logic
+            if (data.localLogo) {
+                document.getElementById('logoFallback').classList.add('hidden');
+                document.getElementById('logoImg').classList.remove('hidden');
+                document.getElementById('logoImg').src = data.localLogo;
+            }
             if (data.fn || data.ln || data.ph || data.em) {
                 document.getElementById('contactSection').classList.remove('hidden');
                 document.getElementById('contactName').innerText = `${data.fn || ''} ${data.ln || ''}`.trim() || data.n || 'Contact';
@@ -398,6 +407,21 @@
 
             document.getElementById('loader').classList.add('hidden');
             document.getElementById('content').classList.remove('hidden');
+        }
+
+        function copyWifi() {
+            if (!wifiPass) return;
+            navigator.clipboard.writeText(wifiPass).then(() => {
+                const hint = document.getElementById('wifiHint');
+                const original = hint.innerText;
+                const lang = window.langCode || 'en';
+                hint.innerText = TRANSLATIONS[lang].copied;
+                hint.style.color = "#34C759";
+                setTimeout(() => {
+                    hint.innerText = original;
+                    hint.style.color = "";
+                }, 2000);
+            });
         }
 
         function downloadVCard() {
