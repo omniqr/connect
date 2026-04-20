@@ -204,7 +204,7 @@
                     </div>
                     <div class="flex items-center gap-4">
                         <i class="fas fa-envelope w-5" style="color: var(--primary)"></i>
-                        <p id="contactEmail" class="text-sm font-medium" style="color: #ffffff"></p>
+                        <p id="contactEmail" class="text-sm font-medium" style="color: var(--text)"></p>
                     </div>
                 </div>
                 <button onclick="downloadVCard()" class="w-full h-16 btn-blue rounded-2xl font-black text-sm tracking-widest flex items-center justify-center">
@@ -224,7 +224,7 @@
                         </div>
                         <div>
                             <p id="ssid" class="font-bold text-lg" style="color: var(--text)">Network</p>
-                            <p class="text-[10px] uppercase font-black" id="wifiHint" style="color: var(--subtext)">Tap to copy</p>
+                            <p class="text-[10px] uppercase font-black" id="wifiHint" style="color: var(--subtext)">Tap to copy password</p>
                         </div>
                     </div>
                     <i class="fas fa-copy opacity-20"></i>
@@ -258,7 +258,6 @@
 
         function trackEvent(type, label = null) {
             if (!qrId || qrId === "unknown") return;
-            // Deduplication logic (1 visit/click per day per device)
             const dedupeKey = `tracked_${qrId}_${type}_${label || ''}`;
             const lastTrack = localStorage.getItem(dedupeKey);
             const now = Date.now();
@@ -272,11 +271,6 @@
                 body: JSON.stringify({ qr_id: qrId, event_type: type, event_label: label })
             }).catch(e => console.error("Track error", e));
         }
-
-        const TRANSLATIONS = {
-            tr: { save: 'REHBERE KAYDET', hint: 'Şifreyi kopyalamak için dokun', copied: 'Şifre kopyalandı!' },
-            en: { save: 'SAVE TO CONTACTS', hint: 'Tap to copy password', copied: 'Password copied!' }
-        };
 
         const SOCIAL_ICONS = {
             'Instagram': 'fa-brands fa-instagram',
@@ -293,7 +287,7 @@
             if (value.startsWith('http')) return value;
             switch (type) {
                 case 'Instagram': return `https://instagram.com/${value.replace('@', '')}`;
-                case 'WhatsApp': return `https://wa.me/${value.replace(/\\D/g, '')}`;
+                case 'WhatsApp': return `https://wa.me/${value.replace(/\D/g, '')}`;
                 case 'Twitter': return `https://x.com/${value.replace('@', '')}`;
                 case 'LinkedIn': return `https://linkedin.com/in/${value}`;
                 case 'TikTok': return `https://tiktok.com/@${value.replace('@', '')}`;
@@ -352,19 +346,12 @@
             document.getElementById('loader').classList.add('hidden');
             document.getElementById('content').classList.remove('hidden');
 
-            const lang = data.l || 'en';
-            const t = TRANSLATIONS[lang] || TRANSLATIONS['en'];
-            window.langCode = lang;
-
-            // Apply Theme
             const themes = { '1': 'theme-oled', '2': 'theme-crystal', '3': 'theme-gold', '4': 'theme-blue' };
             const activeTheme = themes[data.thm] || 'theme-oled';
             document.body.className = activeTheme;
 
-            // Header info
             document.getElementById('mainTitle').innerText = data.n || "OmniQR";
             
-            // Logo Logic
             if (data.localLogo) {
                 document.getElementById('logoFallback').classList.add('hidden');
                 document.getElementById('logoImg').classList.remove('hidden');
@@ -374,7 +361,6 @@
                 document.getElementById('contactSection').classList.remove('hidden');
                 document.getElementById('contactName').innerText = `${data.fn || ''} ${data.ln || ''}`.trim() || data.n || 'Contact';
                 
-                // Show/Hide phone
                 if (data.ph) {
                     document.getElementById('contactPhone').parentElement.classList.remove('hidden');
                     document.getElementById('contactPhone').innerText = data.ph;
@@ -382,26 +368,20 @@
                     document.getElementById('contactPhone').parentElement.classList.add('hidden');
                 }
 
-                // Show/Hide email
                 if (data.em) {
                     document.getElementById('contactEmail').parentElement.classList.remove('hidden');
                     document.getElementById('contactEmail').innerText = data.em;
                 } else {
                     document.getElementById('contactEmail').parentElement.classList.add('hidden');
                 }
-                
-                document.getElementById('saveLabel').innerText = t.save;
             }
 
-            // WiFi Section
             if (data.wn) {
                 document.getElementById('wifiSection').classList.remove('hidden');
                 document.getElementById('ssid').innerText = data.wn;
-                document.getElementById('wifiHint').innerText = t.hint;
                 wifiPass = data.wp;
             }
 
-            // Socials Section
             if (data.soc && data.soc.length > 0) {
                 document.getElementById('socialsSection').classList.remove('hidden');
                 const list = document.getElementById('socialList');
@@ -412,7 +392,8 @@
                     const a = document.createElement('a');
                     a.className = "social-card";
                     a.href = url; a.target = "_blank";
-                    a.onclick = () => trackEvent("click", s.t);
+                    // Analiz ekranı için Platform adı ve Kullanıcı Değerini birleştirip yolluyoruz
+                    a.onclick = () => trackEvent("click", s.t + "||" + s.v);
                     a.innerHTML = `<i class="${icon} text-2xl w-10 text-blue-500"></i><span class="font-black text-lg flex-1">${s.t}</span><i class="fas fa-chevron-right text-gray-700"></i>`;
                     list.appendChild(a);
                 });
@@ -427,8 +408,7 @@
             navigator.clipboard.writeText(wifiPass).then(() => {
                 const hint = document.getElementById('wifiHint');
                 const original = hint.innerText;
-                const lang = window.langCode || 'en';
-                hint.innerText = TRANSLATIONS[lang].copied;
+                hint.innerText = "Password copied!";
                 hint.style.color = "#34C759";
                 setTimeout(() => {
                     hint.innerText = original;
