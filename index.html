@@ -382,8 +382,7 @@
             window.langCode = lang;
 
             // Apply Theme
-            const themes = { '1': 'theme-oled', '2': 'theme-crystal', '3': 'theme-gold', '4': 'theme-blue', '5': 'theme-ember', '6': 'theme-forest' };
-            const activeTheme = themes[data.thm] || 'theme-oled';
+            const activeTheme = data.thm ? `theme-${data.thm}` : 'theme-oled';
             document.body.className = activeTheme;
 
             // Header info
