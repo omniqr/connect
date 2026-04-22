@@ -194,23 +194,21 @@
             <div class="absolute top-0 right-0 p-4 opacity-20">
                 <i class="fas fa-gem" style="color: var(--primary)"></i>
             </div>
-            <div id="logoContainer" class="w-24 h-24 rounded-[30px] flex items-center justify-center mx-auto mb-6 border overflow-hidden" style="background: rgba(var(--primary-rgb), 0.1); border-color: rgba(var(--primary-rgb), 0.2);">
+            <div id="logoContainer" class="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 border overflow-hidden" style="background: rgba(var(--primary-rgb), 0.1); border-color: rgba(var(--primary-rgb), 0.2); box-shadow: 0 10px 30px rgba(0,0,0,0.15);">
                 <div id="logoWrapper" class="w-full h-full flex items-center justify-center">
                     <i id="logoFallback" class="fas fa-briefcase text-4xl" style="color: var(--primary)"></i>
                     <img id="logoImg" class="hidden w-full h-full object-cover" />
                 </div>
             </div>
             <h1 id="mainTitle" class="text-3xl font-black mb-1 name-gradient">OmniQR</h1>
-            <p id="subTitle" class="text-gray-500 font-bold tracking-widest text-[9px] uppercase">Business Profile</p>
+            <p id="mainBio" class="font-bold text-xs tracking-widest uppercase opacity-60" style="color: var(--subtext)"></p>
         </div>
 
         <!-- Unified Contact Card -->
         <div id="contactSection" class="glass hidden overflow-hidden">
             <div class="p-8">
-                <h2 class="text-[9px] font-black tracking-[0.3em] uppercase mb-6 opacity-80" style="color: var(--primary)">Identity Card</h2>
-                <div class="mb-8">
+                <div class="mb-4">
                      <p id="contactName" class="text-3xl font-black mb-2" style="color: var(--text)"></p>
-                     <p id="contactRole" class="font-bold text-xs tracking-widest uppercase opacity-60" style="color: var(--subtext)"></p>
                 </div>
                 <div class="space-y-4 mb-8">
                     <div class="flex items-center gap-4">
@@ -263,7 +261,7 @@
                 </div>
                 <span class="text-[11px] font-bold tracking-wide" style="color: var(--subtext)">Created with <span style="color: var(--text)">OmniQR Business</span></span>
             </a>
-            <p class="text-[9px] font-black tracking-[0.4em] uppercase mt-6" style="color: var(--subtext); opacity: 0.5;">Secure Business Infrastructure</p>
+            <p class="text-[9px] font-black tracking-[0.4em] uppercase mt-6" style="color: var(--subtext); opacity: 0.5;">OmniQR Premium Business Card</p>
         </div>
     </div>
 
@@ -306,14 +304,26 @@
 
         function getPlatformUrl(type, value) {
             if (value.startsWith('http')) return value;
+            const v = value.toLowerCase();
             switch (type) {
-                case 'Instagram': return `https://instagram.com/${value.replace('@', '')}`;
-                case 'WhatsApp': return `https://wa.me/${value.replace(/\D/g, '')}`;
-                case 'Twitter': return `https://x.com/${value.replace('@', '')}`;
-                case 'LinkedIn': return `https://linkedin.com/in/${value}`;
-                case 'TikTok': return `https://tiktok.com/@${value.replace('@', '')}`;
-                case 'Facebook': return `https://facebook.com/${value}`;
-                case 'Telegram': return `https://t.me/${value.replace('@', '')}`;
+                case 'Instagram': 
+                    if (v.includes('instagram.com')) return `https://${value.replace(/^https?:\/\//, '')}`;
+                    return `https://instagram.com/${value.replace('@', '')}`;
+                case 'WhatsApp': 
+                    if (v.includes('wa.me')) return `https://${value.replace(/^https?:\/\//, '')}`;
+                    return `https://wa.me/${value.replace(/\D/g, '')}`;
+                case 'Twitter': 
+                    if (v.includes('x.com') || v.includes('twitter.com')) return `https://${value.replace(/^https?:\/\//, '')}`;
+                    return `https://x.com/${value.replace('@', '')}`;
+                case 'LinkedIn': 
+                    if (v.includes('linkedin.com')) return `https://${value.replace(/^https?:\/\//, '')}`;
+                    return `https://linkedin.com/in/${value}`;
+                case 'TikTok': 
+                    if (v.includes('tiktok.com')) return `https://${value.replace(/^https?:\/\//, '')}`;
+                    return `https://tiktok.com/@${value.replace('@', '')}`;
+                case 'Telegram': 
+                    if (v.includes('t.me')) return `https://${value.replace(/^https?:\/\//, '')}`;
+                    return `https://t.me/${value.replace('@', '')}`;
                 default: return `https://${value}`;
             }
         }
@@ -378,6 +388,7 @@
 
             // Header info
             document.getElementById('mainTitle').innerText = data.n || "OmniQR";
+            document.getElementById('mainBio').innerText = data.bio || '';
             
             // Logo Logic
             if (data.localLogo) {
@@ -388,7 +399,6 @@
             if (data.fn || data.ln || data.ph || data.em) {
                 document.getElementById('contactSection').classList.remove('hidden');
                 document.getElementById('contactName').innerText = `${data.fn || ''} ${data.ln || ''}`.trim() || data.n || 'Contact';
-                document.getElementById('contactRole').innerText = data.bio || ''; // Use role field for bio
                 
                 // Show/Hide phone
                 if (data.ph) {
@@ -425,11 +435,11 @@
                 data.soc.forEach(s => {
                     const icon = SOCIAL_ICONS[s.t] || 'fas fa-link';
                     const url = getPlatformUrl(s.t, s.v);
-                    const label = s.v; // Use the value directly as requested
+                    const label = s.v; // Display only the value
                     const a = document.createElement('a');
                     a.className = "social-card";
                     a.href = url; a.target = "_blank";
-                    a.onclick = () => trackEvent("click", label);
+                    a.onclick = () => trackEvent("click", s.t + "||" + s.v);
                     a.innerHTML = `<i class="${icon} text-2xl w-10 text-blue-500" style="color: var(--primary)"></i><span class="font-black text-lg flex-1">${label}</span><i class="fas fa-chevron-right text-gray-700"></i>`;
                     list.appendChild(a);
                 });
