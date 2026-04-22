@@ -374,7 +374,7 @@
             if (data.fn || data.ln || data.ph || data.em) {
                 document.getElementById('contactSection').classList.remove('hidden');
                 document.getElementById('contactName').innerText = `${data.fn || ''} ${data.ln || ''}`.trim() || data.n || 'Contact';
-                document.getElementById('contactRole').innerText = data.n || 'Business Partner';
+                document.getElementById('contactRole').innerText = ''; // Clear redundant role
                 
                 // Show/Hide phone
                 if (data.ph) {
@@ -411,11 +411,12 @@
                 data.soc.forEach(s => {
                     const icon = SOCIAL_ICONS[s.t] || 'fas fa-link';
                     const url = getPlatformUrl(s.t, s.v);
+                    const label = s.lbl || s.t; // Use custom label if exists
                     const a = document.createElement('a');
                     a.className = "social-card";
                     a.href = url; a.target = "_blank";
-                    a.onclick = () => trackEvent("click", s.t);
-                    a.innerHTML = `<i class="${icon} text-2xl w-10 text-blue-500"></i><span class="font-black text-lg flex-1">${s.t}</span><i class="fas fa-chevron-right text-gray-700"></i>`;
+                    a.onclick = () => trackEvent("click", label + "||" + s.v);
+                    a.innerHTML = `<i class="${icon} text-2xl w-10 text-blue-500" style="color: var(--primary)"></i><span class="font-black text-lg flex-1">${label}</span><i class="fas fa-chevron-right text-gray-700"></i>`;
                     list.appendChild(a);
                 });
             }
