@@ -41,6 +41,14 @@
             --primary: #00D2FF; --primary-rgb: 0, 210, 255; --accent: #3A7BD5; --bg: #001219; --text: #fff; --subtext: #A9D6E5;
             --border: rgba(0, 210, 255, 0.2);
         }
+        .theme-ember {
+            --primary: #FF3B30; --primary-rgb: 255, 59, 48; --accent: #FF9500; --bg: #0A0000; --text: #fff; --subtext: #FFCCCC;
+            --border: rgba(255, 59, 48, 0.2);
+        }
+        .theme-forest {
+            --primary: #34C759; --primary-rgb: 52, 199, 89; --accent: #30B0C7; --bg: #000F00; --text: #fff; --subtext: #CCFFCC;
+            --border: rgba(52, 199, 89, 0.2);
+        }
 
         body {
             background-color: var(--bg);
@@ -76,6 +84,12 @@
 
         .theme-blue .blob-1 { background: #00D2FF; top: -100px; left: -100px; opacity: 0.2; }
         .theme-blue .blob-2 { background: #3A7BD5; bottom: -100px; right: -100px; opacity: 0.2; }
+
+        .theme-ember .blob-1 { background: #FF3B30; top: -100px; left: -100px; opacity: 0.2; }
+        .theme-ember .blob-2 { background: #FF9500; bottom: -100px; right: -100px; opacity: 0.2; }
+
+        .theme-forest .blob-1 { background: #34C759; top: -100px; left: -100px; opacity: 0.2; }
+        .theme-forest .blob-2 { background: #30B0C7; bottom: -100px; right: -100px; opacity: 0.2; }
 
         .blob-3 { background: #BF5AF2; top: 40%; left: 30%; width: 300px; height: 300px; animation-delay: -10s; opacity: 0.05; }
         
@@ -358,7 +372,7 @@
             window.langCode = lang;
 
             // Apply Theme
-            const themes = { '1': 'theme-oled', '2': 'theme-crystal', '3': 'theme-gold', '4': 'theme-blue' };
+            const themes = { '1': 'theme-oled', '2': 'theme-crystal', '3': 'theme-gold', '4': 'theme-blue', '5': 'theme-ember', '6': 'theme-forest' };
             const activeTheme = themes[data.thm] || 'theme-oled';
             document.body.className = activeTheme;
 
@@ -374,7 +388,7 @@
             if (data.fn || data.ln || data.ph || data.em) {
                 document.getElementById('contactSection').classList.remove('hidden');
                 document.getElementById('contactName').innerText = `${data.fn || ''} ${data.ln || ''}`.trim() || data.n || 'Contact';
-                document.getElementById('contactRole').innerText = ''; // Clear redundant role
+                document.getElementById('contactRole').innerText = data.bio || ''; // Use role field for bio
                 
                 // Show/Hide phone
                 if (data.ph) {
@@ -411,11 +425,11 @@
                 data.soc.forEach(s => {
                     const icon = SOCIAL_ICONS[s.t] || 'fas fa-link';
                     const url = getPlatformUrl(s.t, s.v);
-                    const label = s.lbl || s.t; // Use custom label if exists
+                    const label = s.v; // Use the value directly as requested
                     const a = document.createElement('a');
                     a.className = "social-card";
                     a.href = url; a.target = "_blank";
-                    a.onclick = () => trackEvent("click", label + "||" + s.v);
+                    a.onclick = () => trackEvent("click", label);
                     a.innerHTML = `<i class="${icon} text-2xl w-10 text-blue-500" style="color: var(--primary)"></i><span class="font-black text-lg flex-1">${label}</span><i class="fas fa-chevron-right text-gray-700"></i>`;
                     list.appendChild(a);
                 });
